@@ -1,0 +1,6 @@
+
+
+ALTER SEQUENCE hibernate_sequence RESTART WITH 1;
+
+TRUNCATE TABLE sucursal
+    RESTART IDENTITY;
