@@ -53,10 +53,16 @@ public class SucursalesController {
 
     public ResponseEntity<ApiResponse<SucursalDto>> getSucursal(
             @ApiParam("Id of the sucursal to be obtained. Cannot be empty.")
-            @PathVariable Long id){
+            @PathVariable String id){
 
+        long idLong;
+        try{
+            idLong = Long.parseLong(id);
+        }catch (NumberFormatException e) {
+            throw new IllegalArgumentException("id debe ser numerico");
+        }
 
-        Optional<Sucursal> sucursalOptional = sucursalService.findById(id);
+        Optional<Sucursal> sucursalOptional = sucursalService.findById(idLong);
         if (sucursalOptional.isPresent()){
 
             ApiResponse<SucursalDto> apiResponse = new ApiResponse(SucursalDto.of(sucursalOptional.get()));
@@ -83,12 +89,26 @@ public class SucursalesController {
 
     public ResponseEntity<ApiResponse<SucursalDto>> getSucursalMasCercana(
             @ApiParam("longitud. Cannot be empty.")
-            @RequestParam Long longitud,
+            @RequestParam String longitud,
             @ApiParam("latitud. Cannot be empty.")
-            @RequestParam Long latitud) throws Exception{
+            @RequestParam String latitud) throws Exception{
 
 
-        Optional<Sucursal> sucursalOptional = sucursalService.findSucursalMasCercana(new Longitud(longitud),new Latitud(latitud));
+        double longitudDouble;
+        try{
+            longitudDouble = Double.parseDouble(longitud);
+        }catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Longitud es entre -180 y 180");
+        }
+
+        double latitudDouble;
+        try{
+            latitudDouble = Double.parseDouble(latitud);
+        }catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Latitud es entre -90 y 90");
+        }
+
+        Optional<Sucursal> sucursalOptional = sucursalService.findSucursalMasCercana(new Longitud(longitudDouble),new Latitud(latitudDouble));
         if (sucursalOptional.isPresent()){
            ApiResponse<SucursalDto> apiResponse = new ApiResponse(SucursalDto.of(sucursalOptional.get()));
             return ResponseEntity
